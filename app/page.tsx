@@ -71,7 +71,7 @@ export default function LoginPage() {
     setAlert(null);
 
     if (!email || !password) {
-      setAlert({ type: "error", message: "Pare, pakilagay muna yung email tsaka password." });
+      setAlert({ type: "error", message: "Please enter your email and password first." });
       return;
     }
 
@@ -83,7 +83,7 @@ export default function LoginPage() {
       if (email.includes("@") && password.length >= 6) {
         setAlert({ type: "success", message: "Success! Access granted, redirecting..." });
       } else {
-        setAlert({ type: "error", message: "Maling email o password. Pakisubukan ulit." });
+        setAlert({ type: "error", message: "Incorrect email or password. Please try again." });
       }
     }, 1200);
   };
@@ -224,9 +224,9 @@ export default function LoginPage() {
               {/* PANEL 1: Standard Password Login */}
               <div className="w-1/2 pr-1 flex flex-col justify-between">
                 <div>
-                  <div className="mb-5">
-                    <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Mag-login sa Account</h1>
-                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">Ilagay ang iyong credentials para makapasok sa dashboard.</p>
+                          <div className="mb-5">
+                            <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Log in to Your Account</h1>
+                            <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">Enter your credentials to access the dashboard.</p>
                   </div>
 
                   {/* Feedback Alert Notice */}
@@ -320,7 +320,7 @@ export default function LoginPage() {
                           onChange={(e) => setRememberMe(e.target.checked)}
                           className="w-4 h-4 rounded border-slate-300 dark:border-slate-800 text-yellow-500 focus:ring-yellow-400 dark:bg-[#1a202c]"
                         />
-                        <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">I-save ang login ko ng 30 days</span>
+                        <span className="text-xs text-slate-600 dark:text-slate-400 font-medium">Remember my login for 30 days</span>
                       </label>
                     </div>
 
@@ -332,11 +332,11 @@ export default function LoginPage() {
                     >
                       {isLoading ? (
                         <>
-                          <span>Nag-a-authenticate...</span>
+                          <span>Authenticating...</span>
                           <Loader2 className="w-3.5 h-3.5 animate-spin" />
                         </>
                       ) : (
-                        <span>Mag-sign In</span>
+                        <span>Sign In</span>
                       )}
                     </button>
                   </form>
@@ -347,7 +347,7 @@ export default function LoginPage() {
                       <div className="w-full border-t border-slate-200 dark:border-slate-800" />
                     </div>
                     <span className="relative bg-white dark:bg-[#141820] px-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
-                      o gamitin ang SSO
+                      or use SSO
                     </span>
                   </div>
 
@@ -382,8 +382,8 @@ export default function LoginPage() {
               <div className="w-1/2 pl-1 flex flex-col justify-between items-center text-center">
                 <div className="w-full flex flex-col items-center">
                   <div className="mb-2">
-                    <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">I-scan ang QR Code</h2>
-                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">Buksan ang Nexus mobile app para maka-login kaagad.</p>
+                    <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Scan the QR Code</h2>
+                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">Open the Nexus mobile app to log in instantly.</p>
                   </div>
 
                   {/* QR Container Frame */}
@@ -421,7 +421,7 @@ export default function LoginPage() {
                           <div className="w-8 h-8 rounded-full bg-slate-800 text-yellow-400 flex items-center justify-center mb-2">
                             <RotateCw className="w-4 h-4" />
                           </div>
-                          <p className="text-[11px] font-semibold text-slate-200 mb-2">Expired na ang QR</p>
+                          <p className="text-[11px] font-semibold text-slate-200 mb-2">QR code expired</p>
                           <button
                             type="button"
                             onClick={generateNewQR}
@@ -437,7 +437,7 @@ export default function LoginPage() {
                     <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-slate-400">
                       <Clock className="w-3.5 h-3.5 text-yellow-400" />
                       <span>
-                        Mag-e-expire sa <strong className="text-slate-100 font-bold">{secondsLeft}</strong> segundo
+                        Expires in <strong className="text-slate-100 font-bold">{secondsLeft}</strong> seconds
                       </span>
                     </div>
                   </div>
@@ -449,7 +449,7 @@ export default function LoginPage() {
                         1
                       </div>
                       <div className="text-[11px]">
-                        <p className="text-slate-800 dark:text-slate-200 font-semibold">Gamitin ang Nexus App</p>
+                        <p className="text-slate-800 dark:text-slate-200 font-semibold">Use the Nexus App</p>
                         <p className="text-slate-400">Settings &gt; Scanner &gt; Authorize Login</p>
                       </div>
                     </div>
@@ -474,13 +474,13 @@ export default function LoginPage() {
 
           {}
           <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80 text-center text-xs text-slate-400">
-            Wala ka pang account?{" "}
+            Don&apos;t have an account?{" "}
             <a
               href="javascript:void(0)"
               onClick={() => setAlert({type: "success", message: "Registration invite token."})}
               className="text-yellow-500 dark:text-yellow-400 font-bold hover:underline"
             >
-              Mag-register dito
+              Register here
             </a>
           </div>
 
