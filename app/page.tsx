@@ -1,41 +1,27 @@
 "use client";
 
-import React, { useState, useEffect, useRef } from "react";
-import { 
-  Lock, 
-  QrCode, 
-  Sun, 
-  Moon, 
-  Zap, 
-  Eye, 
-  EyeOff, 
-  Loader2, 
-  CheckCircle2, 
-  AlertCircle, 
-  Clock, 
-  RotateCw, 
-  FlaskConical, 
-  ShieldCheck 
+import React, { useState, useEffect } from "react";
+import QRLoginPanel from "../components/login/qr-panel";
+import {
+  Lock, QrCode, Sun, Moon, Zap, Eye, EyeOff,
+  Loader2, CheckCircle2, AlertCircle
 } from "lucide-react";
-type Notice = {type: "success" | "error", message: string};
+
+type Notice = { type: "success" | "error"; message: string };
+type Tab = "password" | "qr";
+
 export default function LoginPage() {
   const [theme, setTheme] = useState("dark");
-  const [activeTab, setActiveTab] = useState("password"); // 'password' | 'qr'
-  
+  const [activeTab, setActiveTab] = useState<Tab>("password");
+
   // Password Form State
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [isLoading, setIsLoading] = useState(false);
-  const [alert, setAlert] = useState<Notice | null>(null); // { type: 'success' | 'error', message: string }
+  const [alert, setAlert] = useState<Notice | null>(null);
   const [pwdStrength, setPwdStrength] = useState(0);
-
-  // QR Auth State
-  const [qrExpired, setQrExpired] = useState(false);
-  const [secondsLeft, setSecondsLeft] = useState(45);
-  const [qrToken, setQrToken] = useState("");
-  const [qrSuccess, setQrSuccess] = useState(false);
 
   useEffect(() => {
     // Sync dark class on html tag for Tailwind dark mode
@@ -60,7 +46,7 @@ export default function LoginPage() {
     return score;
   };
 
-  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>  ) => {
+  const handlePasswordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = e.target.value;
     setPassword(val);
     setPwdStrength(calculateStrength(val));
@@ -88,40 +74,6 @@ export default function LoginPage() {
     }, 1200);
   };
 
-  const generateNewQR = () => {
-    const randomSession = "nexus_sess_" + Math.random().toString(36).substring(2, 9);
-    setQrToken(randomSession);
-    setSecondsLeft(45);
-    setQrExpired(false);
-    setQrSuccess(false);
-  };
-
-  useEffect(() => {
-    if (activeTab !== "qr") return;
-    if (!qrToken) generateNewQR();
-
-    const interval = setInterval(() => {
-      setSecondsLeft((prev) => {
-        if (prev <= 1) {
-          clearInterval(interval);
-          setQrExpired(true);
-          return 0;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [activeTab, qrToken]);
-
-  const simulateQRScan = () => {
-    setQrSuccess(true);
-    setTimeout(() => {
-      setAlert({ type: "success", message: "QR Auth verified! Logging in..." });
-      setActiveTab("password");
-    }, 1000);
-  };
-
   const getStrengthColor = () => {
     if (pwdStrength <= 25) return "bg-rose-500";
     if (pwdStrength <= 50) return "bg-amber-500";
@@ -138,8 +90,8 @@ export default function LoginPage() {
 
   return (
     <div className={`min-h-screen flex flex-col justify-between transition-colors duration-300 font-sans ${theme === 'dark' ? 'bg-[#0c0e12] text-slate-100' : 'bg-amber-50 text-slate-800'}`}>
-      
-      {}
+
+      {/* Header */}
       <header className="w-full max-w-6xl mx-auto px-6 py-6 flex items-center justify-between">
         <div className="flex items-center gap-3 select-none">
           <div className="w-10 h-10 rounded-xl bg-yellow-400 flex items-center justify-center text-slate-950 font-black shadow-lg shadow-yellow-500/20 ring-2 ring-yellow-400/30">
@@ -162,8 +114,11 @@ export default function LoginPage() {
             {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
           </button>
           <a
-            href="javascript:void(0)"
-            onClick={() => setAlert({type: "success", message: "Question"})}
+            href="#"
+            onClick={(e) => {
+              e.preventDefault();
+              setAlert({ type: "success", message: "Question" });
+            }}
             className="hidden sm:inline-flex text-xs font-semibold text-slate-400 hover:text-yellow-400 transition-colors px-3 py-2"
           >
             Questions?
@@ -171,15 +126,15 @@ export default function LoginPage() {
         </div>
       </header>
 
-      {}
+      {/* Main */}
       <main className="flex-1 flex items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-[430px] bg-white dark:bg-[#141820] border border-slate-200 dark:border-slate-800/80 rounded-2xl shadow-2xl shadow-black/20 p-6 sm:p-8 relative overflow-hidden transition-all">
-          
-          {}
+
+          {/* Tab Switcher */}
           <div className="mb-6">
             <div className="relative p-1 bg-slate-100 dark:bg-[#0c0e12] rounded-xl flex items-center border border-slate-200 dark:border-slate-800/80">
-              
-              {/* Handcrafted Animated Highlight Background */}
+
+              {/* Animated Highlight Background */}
               <div
                 className={`absolute top-1 bottom-1 w-[calc(50%-4px)] bg-yellow-400 rounded-lg transition-all duration-300 ease-out shadow-sm ${
                   activeTab === "password" ? "left-1" : "left-[calc(50%+2px)]"
@@ -212,7 +167,7 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {}
+          {/* Sliding Panels */}
           <div className="relative overflow-hidden min-h-[385px]">
             <div
               className="flex transition-transform duration-300 ease-in-out w-[200%]"
@@ -220,13 +175,13 @@ export default function LoginPage() {
                 transform: activeTab === "password" ? "translateX(0%)" : "translateX(-50%)",
               }}
             >
-              
+
               {/* PANEL 1: Standard Password Login */}
               <div className="w-1/2 pr-1 flex flex-col justify-between">
                 <div>
-                          <div className="mb-5">
-                            <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Log in to Your Account</h1>
-                            <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">Enter your credentials to access the dashboard.</p>
+                  <div className="mb-5">
+                    <h1 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Log in to Your Account</h1>
+                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">Enter your credentials to access the dashboard.</p>
                   </div>
 
                   {/* Feedback Alert Notice */}
@@ -271,11 +226,15 @@ export default function LoginPage() {
                           Password
                         </label>
                         <a
-                          href="javascript:void(0)"
-                          onClick={() => setAlert({type: "success", message: "Forget pass? Connect to admin."})}
+                          href="#"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            setAlert({ type: "success", message: "Forget pass? Connect to admin." });
+                          }}
                           className="text-xs font-semibold text-yellow-500 dark:text-yellow-400 hover:underline"
                         >
-                          Forget                       </a>
+                          Forget
+                        </a>
                       </div>
                       <div className="relative">
                         <input
@@ -355,20 +314,20 @@ export default function LoginPage() {
                   <div className="grid grid-cols-2 gap-2.5">
                     <button
                       type="button"
-                      onClick={() => setAlert({type: "success", message: "Google Auth integration coming soon."})}
+                      onClick={() => setAlert({ type: "success", message: "Google Auth integration coming soon." })}
                       className="py-2 px-3 bg-slate-50 dark:bg-[#1a202c] hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <svg className="w-3.5 h-3.5" viewBox="0 0 24 24">
-                        <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.2 9 5 12 5z"/>
-                        <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z"/>
-                        <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 10.8 0 12.5s.7 2.8 1.9 5.2l3.7-2.9z"/>
-                        <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.2-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z"/>
+                        <path fill="#EA4335" d="M12 5c1.6 0 3 .6 4.1 1.6l3.1-3.1C17.3 1.7 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.2 9 5 12 5z" />
+                        <path fill="#4285F4" d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.5h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.8z" />
+                        <path fill="#FBBC05" d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 10.8 0 12.5s.7 2.8 1.9 5.2l3.7-2.9z" />
+                        <path fill="#34A853" d="M12 23c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.2-6.4-5.2L1.9 16C3.7 19.7 7.5 23 12 23z" />
                       </svg>
                       <span>Google</span>
                     </button>
                     <button
                       type="button"
-                      onClick={() => setAlert({type: "success", message: "GitHub Auth integration coming soon."})}
+                      onClick={() => setAlert({ type: "success", message: "GitHub Auth integration coming soon." })}
                       className="py-2 px-3 bg-slate-50 dark:bg-[#1a202c] hover:bg-slate-100 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-800 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-200 transition-colors flex items-center justify-center gap-2 cursor-pointer"
                     >
                       <span className="font-bold">GH</span>
@@ -379,105 +338,20 @@ export default function LoginPage() {
               </div>
 
               {/* PANEL 2: QR Code Login */}
-              <div className="w-1/2 pl-1 flex flex-col justify-between items-center text-center">
-                <div className="w-full flex flex-col items-center">
-                  <div className="mb-2">
-                    <h2 className="text-xl font-bold text-slate-900 dark:text-white tracking-tight">Scan the QR Code</h2>
-                    <p className="text-slate-500 dark:text-slate-400 text-xs mt-1">Open the Nexus mobile app to log in instantly.</p>
-                  </div>
-
-                  {/* QR Container Frame */}
-                  <div className="my-4 relative">
-                    <div className="p-3 bg-white border-2 border-yellow-400 rounded-2xl shadow-xl relative overflow-hidden flex items-center justify-center w-44 h-44">
-                      
-                      {/* Scanning Animated Beam Line */}
-                      {!qrExpired && !qrSuccess && (
-                        <div className="absolute left-2 right-2 h-0.5 bg-yellow-400 shadow-[0_0_12px_#facc15] animate-bounce z-10 pointer-events-none" />
-                      )}
-
-                      {/* Display QR Vector Code */}
-                      {qrSuccess ? (
-                        <div className="flex flex-col items-center justify-center text-yellow-500 animate-pulse">
-                          <ShieldCheck className="w-12 h-12 mb-1 text-yellow-400" />
-                          <span className="text-xs font-bold text-slate-900">Authorized!</span>
-                        </div>
-                      ) : (
-                        <div className="w-36 h-36 bg-slate-950 p-2 rounded-lg flex items-center justify-center">
-                          <svg className="w-full h-full text-yellow-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                            <rect x="3" y="3" width="7" height="7" rx="1.5" />
-                            <rect x="14" y="3" width="7" height="7" rx="1.5" />
-                            <rect x="3" y="14" width="7" height="7" rx="1.5" />
-                            <path d="M14 14h3v3h-3z" fill="currentColor" />
-                            <path d="M18 18h3v3h-3z" fill="currentColor" />
-                            <path d="M14 18h3v3h-3z" />
-                            <path d="M18 14h3v3h-3z" />
-                          </svg>
-                        </div>
-                      )}
-
-                      {/* Expiration Overlay Screen */}
-                      {qrExpired && !qrSuccess && (
-                        <div className="absolute inset-0 bg-slate-950/90 backdrop-blur-sm z-20 flex flex-col items-center justify-center p-3">
-                          <div className="w-8 h-8 rounded-full bg-slate-800 text-yellow-400 flex items-center justify-center mb-2">
-                            <RotateCw className="w-4 h-4" />
-                          </div>
-                          <p className="text-[11px] font-semibold text-slate-200 mb-2">QR code expired</p>
-                          <button
-                            type="button"
-                            onClick={generateNewQR}
-                            className="px-3 py-1.5 bg-yellow-400 hover:bg-yellow-500 text-slate-950 text-[11px] font-bold rounded-lg transition-colors shadow-sm cursor-pointer"
-                          >
-                            Reload QR
-                          </button>
-                        </div>
-                      )}
-                    </div>
-
-                    {/* Countdown Status Text */}
-                    <div className="mt-3 flex items-center justify-center gap-1.5 text-xs text-slate-400">
-                      <Clock className="w-3.5 h-3.5 text-yellow-400" />
-                      <span>
-                        Expires in <strong className="text-slate-100 font-bold">{secondsLeft}</strong> seconds
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Instruction Step Box */}
-                  <div className="w-full bg-slate-50 dark:bg-[#0c0e12] border border-slate-200 dark:border-slate-800/80 rounded-xl p-3 text-left">
-                    <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 rounded-lg bg-yellow-400/20 text-yellow-400 flex items-center justify-center font-bold text-xs shrink-0">
-                        1
-                      </div>
-                      <div className="text-[11px]">
-                        <p className="text-slate-800 dark:text-slate-200 font-semibold">Use the Nexus App</p>
-                        <p className="text-slate-400">Settings &gt; Scanner &gt; Authorize Login</p>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Simulation Action button for testing */}
-                <div className="w-full mt-2">
-                  <button
-                    type="button"
-                    onClick={simulateQRScan}
-                    className="w-full py-1.5 px-2 bg-transparent hover:bg-slate-800/50 text-[10px] text-slate-500 rounded-lg border border-dashed border-slate-800 transition-colors flex items-center justify-center gap-1 cursor-pointer"
-                  >
-                    <FlaskConical className="w-3 h-3 text-yellow-400" />
-                    <span>Dev Test: Simulate QR Scan Success</span>
-                  </button>
-                </div>
-              </div>
+              <QRLoginPanel active={activeTab === "qr"} />
 
             </div>
           </div>
 
-          {}
+          {/* Register */}
           <div className="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800/80 text-center text-xs text-slate-400">
             Don&apos;t have an account?{" "}
             <a
-              href="javascript:void(0)"
-              onClick={() => setAlert({type: "success", message: "Registration invite token."})}
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setAlert({ type: "success", message: "Registration invite token." });
+              }}
               className="text-yellow-500 dark:text-yellow-400 font-bold hover:underline"
             >
               Register here
@@ -487,7 +361,7 @@ export default function LoginPage() {
         </div>
       </main>
 
-      {}
+      {/* Footer */}
       <footer className="w-full max-w-6xl mx-auto px-6 py-4 text-center sm:flex sm:justify-between sm:items-center text-xs text-slate-500">
         <p>&copy; 2026 NEXUS Studio Workspace. All rights reserved.</p>
         <div className="flex justify-center gap-4 mt-2 sm:mt-0">
